@@ -38,6 +38,9 @@ namespace sc
                     iterator( node * pt = nullptr ) : ptr{ pt }
                     { /* empty */ }
                     /// it1 = it2;
+                    iterator(const iterator & other){
+                        this->ptr = other.ptr;
+                    }
                     iterator& operator=( const iterator& rhs )
                     {
                         ptr = rhs.ptr;
@@ -46,7 +49,7 @@ namespace sc
                     /// *it = x;
                     T& operator*(void)
                     {
-                        return ptr->next->data;
+                        return ptr->data;
                     }
                     /// x = *it;
                     const T& operator*(void) const
@@ -67,13 +70,8 @@ namespace sc
                     /// it++ pós incremento.
                     iterator operator++(int)
                     {
-                        
-                        iterator temp( ptr ); // Cria um iterator temporário com o endereço atual.
-                        if (ptr->next != nullptr){
                         ptr = ptr->next;
-
-                        }
-                        return temp;
+                        return ptr->prev ;
                     }
                     /// --it pré decremento.
                     iterator operator--(void)
@@ -129,10 +127,10 @@ namespace sc
             };
                 
         private:
-        node* head;
         node* tail;
         size_t SIZE;
         public:
+        node* head;
         list()
         {
             head = new node();
@@ -165,8 +163,9 @@ namespace sc
             tail->prev = head;
             SIZE = 0;
             head->prev = tail->next = nullptr;
-            for (size_t i = 0 ; i + ilist.begin() != ilist.end() ; i++){
-                push_back( *(ilist.begin() + i) );
+            auto it = ilist.begin();
+            for (; it != ilist.end() ; it++){
+                push_back( *it );
             }
         }
         
@@ -266,19 +265,21 @@ namespace sc
         {
             node* target = new node();
             target->data = value;
-            target->prev = pos.ptr;
-            target->next = pos.ptr->next;
-            pos.ptr->next->prev = target;
-            pos.ptr->next = target;
+            
+            target->prev = pos.ptr->prev;
+            target->next = pos.ptr;
+            pos.ptr->prev = target;
+            target->prev->next = target; 
+            
             SIZE++;
         }
 
-        void insert(iterator pos,iterator first, iterator last )
-        {
-            while (first !=last)
+        void insert( iterator pos, iterator first, iterator  last )
+        {   
+            while (first != last)
             {
-                insert(pos, *first++);
-                pos++;
+                insert(pos, *first);
+                first++;
             }
         }
 
@@ -286,9 +287,7 @@ namespace sc
         {
             auto it =  ilist.begin();
             while (it != ilist.end()){
-                insert(pos, *it);
-                it++;
-                pos++;
+                insert(pos, *it++);
             }
 
         }
@@ -309,12 +308,10 @@ namespace sc
         {
             iterator pos = first;
             while (first != last){
-            std::cout <<"apagando o :"<<*first << std::endl;
-                erase(first++);
+                erase(++first - 1 );
             }
-            std::cout <<"apagado" << std::endl;
 
-            return pos;
+            return last - 1;
         }
 
         const T& back() const{
@@ -330,11 +327,11 @@ namespace sc
         }
 
         iterator begin (){
-            return iterator(head);
+            return iterator(head->next);
         }
 
         iterator end(){
-            return iterator(tail->prev);
+            return iterator(tail);
         }
 
         list& operator=(list & rhs)

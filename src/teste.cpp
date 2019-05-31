@@ -46,8 +46,8 @@ int main (){
         std::cout <<"entrando na função" << std::endl;
 
         auto past_last = seq.erase( seq.begin());
-        assert( seq.begin() == past_last );
         assert( seq == ( sc::list<int>{ 4, 5 } ) );
+        assert( seq.begin() == past_last );
         assert( seq.size() == 2 );
 
         // removing at the middle.
