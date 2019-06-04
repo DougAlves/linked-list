@@ -26,15 +26,16 @@ namespace sc
         class iterator
             {
                 public:
-                    typedef T& reference; //!< Alias para uma referência.
                     typedef std::ptrdiff_t difference_type;
-                    //! Identificar a categoria do iterador para algoritmos do STL.
                     typedef std::bidirectional_iterator_tag iterator_category;
+                    typedef T& reference; //!< Alias para uma referência.
+                    typedef node * pointer;
+                    typedef node value_type;
+
                     //=== Private data
                 private:
-                    //=== Interface pública.
-                public:
                     node* ptr;
+                public:
                     iterator( node * pt = nullptr ) : ptr{ pt }
                     { /* empty */ }
                     /// it1 = it2;
@@ -47,12 +48,12 @@ namespace sc
                         return *this;
                     }
                     /// *it = x;
-                    T& operator*(void)
+                    reference operator*(void)
                     {
                         return ptr->data;
                     }
                     /// x = *it;
-                    const T& operator*(void) const
+                    const reference operator*(void) const
                     {
                         return ptr->data;
                     }
@@ -76,7 +77,8 @@ namespace sc
                     /// --it pré decremento.
                     iterator operator--(void)
                     {
-                        return iterator ( ptr->prev );
+                        ptr = ptr->prev;
+                        return iterator ( ptr );
                     }
                     /// it-- pós decremento.
                     iterator operator--(int)
@@ -85,6 +87,9 @@ namespace sc
                         iterator temp( ptr ); // Cria um iterator temporário com o endereço atual.
                         ptr = ptr->prev;
                         return temp;
+                    }
+                    pointer& getpointer(){
+                        return ptr;
                     }
                     
                     /// Comparação it == it2
@@ -266,42 +271,59 @@ namespace sc
             node* target = new node();
             target->data = value;
             
-            target->prev = pos.ptr->prev;
-            target->next = pos.ptr;
-            pos.ptr->prev = target;
+            target->prev = pos.getpointer()->prev;
+            target->next = pos.getpointer();
+            pos.getpointer()->prev = target;
             target->prev->next = target; 
             
             SIZE++;
         }
 
-        void insert( iterator pos, iterator first, iterator  last )
-        {   
+        void assing(const T& value)
+        {
+            iterator it = begin();
+            while (it != tail)
+                *it++ = value;
+        }
+
+        void assing(const T& value, size_t count){
+            clear();
+            for (int i =0; i< count; i++)
+                push_front(value);
+
+        }
+
+        template<typename InItr >
+        iterator insert( iterator pos, InItr first, InItr  last )
+        {  
+            iterator aux = pos.getpointer()->prev; 
             while (first != last)
             {
                 insert(pos, *first);
                 first++;
             }
+            return aux;
         }
-
-        void insert(iterator pos, std::initializer_list<T> ilist)
+        iterator insert(iterator pos, std::initializer_list<T> ilist)
         {
+            iterator aux = pos.getpointer()->prev; 
             auto it =  ilist.begin();
             while (it != ilist.end()){
                 insert(pos, *it++);
             }
-
+            return aux;
         }
 
         iterator erase(iterator pos)
         {
-            node* to_delete = pos.ptr;
-            std::cout <<"Erase" << std::endl;
+            node* to_delete = pos.getpointer();
+            iterator aux = pos+1;
             
             to_delete->prev->next = to_delete->next;
             to_delete->next->prev =  to_delete->prev;
             delete to_delete;
             SIZE--;
-            return pos;
+            return aux;
         }
 
         iterator erase( iterator first, iterator last)
@@ -311,7 +333,7 @@ namespace sc
                 erase(++first - 1 );
             }
 
-            return last - 1;
+            return last;
         }
 
         const T& back() const{
@@ -350,12 +372,12 @@ namespace sc
             clear();
             auto it = ilist.begin();
             while (it != ilist.end()){
-                push_back(*it);
+                push_back(*it++);
             }
             return *this;
         }
 
-        bool  operator==(const list &  rhs){
+        bool operator==(const list &  rhs){
             if(rhs.SIZE != SIZE) return false;
             
             iterator it (head->next);
@@ -376,6 +398,7 @@ namespace sc
             return not (*this == rhs);
         }
 
+
         friend std::ostream& operator<<(std::ostream & os, const list &list){
             node* it;
             it = list.head->next;
@@ -386,7 +409,7 @@ namespace sc
             }
             os<<"]";
             return os;
-        };
+        }
 
     };
 
