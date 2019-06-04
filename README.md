@@ -4,7 +4,7 @@ Developed by [Douglas Lima](https://projetos.imd.ufrn.br/DougAlves)
 This project is a implementation of the data structure Doubly Linked List with a head node and a
 tail node.
 
-##Compilação 
+#Compilation 
 
 To compile this project you must have CMake installed
 with cmake installed create a build folder and enter the folder with:
