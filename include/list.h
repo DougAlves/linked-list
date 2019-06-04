@@ -1,4 +1,4 @@
-
+#ifndef LINKED_LIST
 #define LINKED_LIST
 
 #include <cstdlib> // size_t
@@ -516,3 +516,5 @@ namespace sc
     };
 
 };
+
+#endif
