@@ -40,7 +40,6 @@ int main( void )
         assert( seq.empty() == false );
 
         // recover elements to test.
-        std::cout << seq.head->next->data <<std::endl;
         auto i{0};
         for ( auto it = seq.begin(); it != seq.end();++it, ++i){
             std::cout<< *it <<" "<< i+1<<std::endl;;
