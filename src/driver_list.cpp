@@ -42,7 +42,6 @@ int main( void )
         // recover elements to test.
         auto i{0};
         for ( auto it = seq.begin(); it != seq.end();++it, ++i){
-            std::cout<< *it <<" "<< i+1<<std::endl;;
             assert( *it == i+1 );
         }
         std::cout << ">>> Passed!\n\n";
