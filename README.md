@@ -2,31 +2,15 @@
 Developed by [Douglas Lima](https://projetos.imd.ufrn.br/DougAlves)
 
 This project is a implementation of the data structure Doubly Linked List with a head node and a
-tail node.
+tail node. To implement this i used the a c++ template class.
 
-## Compilation 
+All the documetation is at the file `./include/list.h` in Doxygem format.
 
-To compile this project you must have CMake installed
-with cmake installed create a build folder and enter the folder with:
-
-```
-$ mkdir build && cd build
-````
-
-Generate the files to the compilation with :
+## Usage
+To use it you must add this to your project `include` folder and do :
 
 ```
-$ cmake -G "Unix Makefiles" ..
-````
-
-Compile with :
-
+#include "/path/to/include/list.h"
 ```
-$ make 
-````
 
-To rum a test file type:
-
-```
-$ ./listTest
-````
+At every file you want to use the class and its done !

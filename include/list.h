@@ -8,8 +8,12 @@
 namespace sc
 {
 
-    /** 
-    \brief That is a template class the implements a doubly linked list
+    /**
+    \brief That is a template class the implements a doubly linked list.
+	*	   At this implementation i used a head node and a tail node meaning that
+	*	   push_back and push_front methods heva a constant temporal complexity.
+
+	*      .Also implemented is an iterator class
     */
     template <typename T>
     class list
@@ -95,24 +99,24 @@ namespace sc
                     pointer& getpointer(){
                         return ptr;
                     }
-                    
+
                     /// Comparação it == it2
                     bool operator==( const iterator &it ) const
-                    { 
+                    {
                         //std::cout <<"ENDEREÇO DO THIS: "<< this->ptr<<std::endl;
                         //std::cout <<"ENDEREÇO DO PARAMETRO : "<<it.ptr << std::endl;
-                        return this->ptr == it.ptr ; /* Devem apontar pro mesmo endereço. */ 
+                        return this->ptr == it.ptr ; /* Devem apontar pro mesmo endereço. */
                     }
                     /// Comparação it != it2
                     bool operator!=( const iterator &it ) const
-                    { 
+                    {
                         bool equal = *this == it;
                         //std::cout << equal << std::endl;
                         //std::cout << !equal <<std::endl;
-                        return  !equal ; /* Não Devem apontar pro mesmo endereço. */ 
+                        return  !equal ; /* Não Devem apontar pro mesmo endereço. */
                     }
                     /// it = it1 - it2;
-                    
+
                     iterator operator+( int a  )
                     {
                         iterator aux (ptr);
@@ -134,15 +138,15 @@ namespace sc
                         return aux;
                     }
             };
-                
+
         private:
         node* tail;
         size_t SIZE;
         node* head;
         public:
-        /** 
+        /**
          \brief Regular constructor
-         
+		 This builds regular list with size 0.
         */
         list()
         {
@@ -154,7 +158,7 @@ namespace sc
             SIZE = 0;
         }
 
-        /** 
+        /**
          \brief Copy constructor
          @param List to be copied
         */
@@ -166,16 +170,20 @@ namespace sc
             head->prev = tail->next = nullptr;
             SIZE = 0;
             node* it = other.tail->prev;
-            
+
             while (it != other.head){
                 this->push_front(it->data);
                 it = it->prev;
             }
         }
 
-        /** 
+        /**
          \brief Using initializer list constructor
          @param ilist : initializer list with the values for the list
+			This constructor allows the user to build a list object with the
+			currrent sintax :
+
+			list<int> fibb {1,1,2,3,5,8,13}
         */
         list(const std::initializer_list<T>& ilist)
         {
@@ -190,7 +198,7 @@ namespace sc
                 push_back( *it );
             }
         }
-        /** 
+        /**
          \brief With a initial size constructor
          @param sz: size of the new list
         */
@@ -207,10 +215,13 @@ namespace sc
             }
             SIZE = sz;
         }
-        /** 
+        /**
          \brief Range constructor
          @param first: operator to the begin of the range
          @param last : operator to the end of the range
+		 This builds a list based on the given range.
+		 This method get iterators as parameters so, this can build a list
+		 based on any 'semantic' range. This means that the range does not need to be a linear block of memory, all the the iterators need is to have the operator++ inplemented
         */
         template<typename InItr >
         list(InItr first, InItr last)
@@ -227,8 +238,9 @@ namespace sc
             }
 
         }
-        /** 
+        /**
          \brief Destructor
+		 This deletes every alloced memory, including head and tail nodes.
         */
         ~list(){
             clear();
@@ -236,9 +248,11 @@ namespace sc
             delete tail;
         }
 
-        /** 
+        /**
          \brief Add a element to at the first position of the list
          @param data: value to be added
+		 This method insert a new node at the begining of the list with a
+		 constant time complexity for every case.
         */
         void push_front( const T& data)
         {
@@ -250,9 +264,11 @@ namespace sc
             head->next = target;
             SIZE++;
         }
-        /** 
+        /**
          \brief Add a element to the last position of the list
          @param data: value to be added
+		 This method insert a new node at the end of the list with a
+		 constant time complexity for every case.
         */
         void push_back( const T& data)
         {
@@ -264,8 +280,10 @@ namespace sc
             tail->prev = target;
             SIZE++;
         }
-        /** 
+        /**
          \brief Clear the list
+		 This method deletes the memory alloced to store the information.
+		 It thoes not delete the head and tail node.
         */
         void clear(){
             if (head->next == tail) return;
@@ -275,21 +293,23 @@ namespace sc
             SIZE = 0;
         }
 
-        /** 
+        /**
          \brief Returns the current size of the list
         */
         size_t size()
         {
             return SIZE;
         }
-        /** 
+        /**
          \brief Return if the list is empty
         */
         bool empty(){
             return  head->next == tail;
         }
-        /** 
+        /**
          \brief Remove the element at the top of the list
+		 This operation is very straight forward with what it does
+		 If the list is empty this method do not do any thing.
         */
         void pop_front()
         {
@@ -298,11 +318,13 @@ namespace sc
             head->next->next->prev = head;
             head->next = head->next->next;
             delete target;
-            SIZE--;    
+            SIZE--;
         }
 
-        /** 
+        /**
          \brief Remove the element at the last position of the list
+		 This operation is very straight forward with what it does
+		 If the list is empty this method do not do any thing.
         */
         void pop_back()
         {
@@ -313,7 +335,7 @@ namespace sc
             delete target;
             SIZE--;
         }
-        /** 
+        /**
          \brief Insert the value at the a given position
          @param pos: Iterator to the position of the insertion
          @param value: Value the is about to be insert
@@ -322,15 +344,15 @@ namespace sc
         {
             node* target = new node();
             target->data = value;
-            
+
             target->prev = pos.getpointer()->prev;
             target->next = pos.getpointer();
             pos.getpointer()->prev = target;
-            target->prev->next = target; 
-            
+            target->prev->next = target;
+
             SIZE++;
         }
-        /** 
+        /**
          \brief Replace the values of the list for 'value'
          @param value: New value of the positions of the list
         */
@@ -340,10 +362,12 @@ namespace sc
             while (it != tail)
                 *it++ = value;
         }
-        /** 
-         \brief Replace the list for count nodes with value 
+        /**
+         \brief Replace the list for count nodes with value
          @param count: New size of the list
-         @param value: New value for the list nodes 
+         @param value: New value for the list nodes
+		 This operation deletes the list, all the information previosly stored
+		 will be lost,
         */
         void assing(const T& value, size_t count){
             clear();
@@ -351,16 +375,18 @@ namespace sc
                 push_front(value);
 
         }
-        /** 
+        /**
          \brief Insert at a given position the values in the given range
          @param pos: Iterator to the position of the insertion
          @param first: Iterator to the begin of the range
          @param last: Iterator to the end of the range
+		 This operation inserts the values the are at the 'semantic' range in the list.
+
         */
         template<typename InItr >
         iterator insert( iterator pos, InItr first, InItr  last )
-        {  
-            iterator aux = pos.getpointer()->prev; 
+        {
+            iterator aux = pos.getpointer()->prev;
             while (first != last)
             {
                 insert(pos, *first);
@@ -369,21 +395,22 @@ namespace sc
             return aux;
         }
 
-        /** 
+        /**
          \brief Insert the values of a iniliazed list at a given position
          @param pos: Iterator to the position of the insertion
          @param ilist: Initializer list with the values to be inserted
+		 This operation inserts the values the are at the initializer list  in the list.
         */
         iterator insert(iterator pos, std::initializer_list<T> ilist)
         {
-            iterator aux = pos.getpointer()->prev; 
+            iterator aux = pos.getpointer()->prev;
             auto it =  ilist.begin();
             while (it != ilist.end()){
                 insert(pos, *it++);
             }
             return aux;
         }
-        /** 
+        /**
          \brief Remove from the list the value at the given position
          @param pos: Iterator to the postion to be removed
         */
@@ -391,14 +418,14 @@ namespace sc
         {
             node* to_delete = pos.getpointer();
             iterator aux = pos+1;
-            
+
             to_delete->prev->next = to_delete->next;
             to_delete->next->prev =  to_delete->prev;
             delete to_delete;
             SIZE--;
             return aux;
         }
-        /** 
+        /**
          \brief Remove from the list the values of the given range
          @param first: Iterator to the begin of the range
          @param last:  Iterator to the end of the range
@@ -412,37 +439,37 @@ namespace sc
 
             return last;
         }
-        /** 
+        /**
          \brief Return a const reference for the last value of the list
         */
         const T& back() const{
-            if (head->next == tail) 
+            if (head->next == tail)
                 throw "[]";
             return tail->prev->data;
         }
 
-        /** 
+        /**
          \brief Return a const referece to the firs value of the list
         */
         const T& front() const{
-            if (head->next == tail) 
+            if (head->next == tail)
                 throw "[]";
             return head->next->data;
         }
 
-        /** 
+        /**
          \brief Return a iterator to the firs position of the list
         */
         iterator begin (){
             return iterator(head->next);
         }
-        /** 
+        /**
          \brief Return a iterator to the last value of the list
         */
         iterator end(){
             return iterator(tail);
         }
-        /** 
+        /**
          \brief Operator of atribution
          @param rhs: The list the 'this' is now equal to
         */
@@ -457,7 +484,7 @@ namespace sc
             return *this;
 
         }
-        /** 
+        /**
          \brief Operator of atribution the recive a initilazer list
          @param ilist: Initializer list with the values for 'this'
         */
@@ -470,13 +497,13 @@ namespace sc
             return *this;
         }
 
-        /** 
+        /**
          \brief operator of comparation (if the lists are equal)
          @param rhs: The list to be compared with 'this'
         */
         bool operator==(const list &  rhs){
             if(rhs.SIZE != SIZE) return false;
-            
+
             iterator it (head->next);
             iterator it2( rhs.head->next) ;
             while(it != tail)
@@ -490,7 +517,7 @@ namespace sc
             }
             return true;
         }
-        /** 
+        /**
          \brief operator of comparation (if the lists are diferent)
          @param rhs: The list to be compared with 'this'
         */
@@ -498,7 +525,7 @@ namespace sc
             return not (*this == rhs);
         }
 
-        /** 
+        /**
          \brief operator of extraction
         */
         friend std::ostream& operator<<(std::ostream & os, const list &list){
